@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gepg_min_app_u_i/app/modules/home/views/favorite_view.dart';
 import 'package:gepg_min_app_u_i/app/modules/home/views/payment_history_view.dart';
 import 'package:gepg_min_app_u_i/app/modules/home/views/profile_view.dart';
+import 'package:gepg_min_app_u_i/app/routes/app_pages.dart';
+import 'package:gepg_min_app_u_i/app/utils/app_constants.dart';
 
 import 'package:get/get.dart';
 
@@ -161,7 +163,7 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
           SizedBox(
-            height: Get.size.height * 0.07,
+            height: Get.size.height * 0.06,
           ),
           const Align(
             alignment: Alignment.center,
@@ -200,24 +202,28 @@ class HomeView extends GetView<HomeController> {
             iconData: Icons.electric_bolt_rounded,
             color: Colors.green.shade400,
             context: context,
+            service: InstitutionServices.luku,
           ),
           buildInstitutionServiceItem(
             title: "Water",
             iconData: Icons.water_drop_outlined,
             color: Colors.purple.shade400,
             context: context,
+            service: InstitutionServices.water,
           ),
           buildInstitutionServiceItem(
             title: "Police",
             iconData: Icons.local_police_outlined,
             color: Colors.orange.shade400,
             context: context,
+            service: InstitutionServices.police,
           ),
           buildInstitutionServiceItem(
             title: "Parking",
             iconData: Icons.local_parking_rounded,
             color: Colors.green.shade400,
             context: context,
+            service: InstitutionServices.parking,
           ),
         ],
       ),
@@ -229,6 +235,7 @@ class HomeView extends GetView<HomeController> {
     required Color color,
     required IconData iconData,
     required BuildContext context,
+    required InstitutionServices service,
   }) {
     return GestureDetector(
       onTap: () {
@@ -272,11 +279,13 @@ class HomeView extends GetView<HomeController> {
                           const SizedBox(
                             height: 20,
                           ),
-                          const Align(
+                          Align(
                             alignment: Alignment.bottomLeft,
                             child: Text(
-                              "Luku Services",
-                              style: TextStyle(
+                              service == InstitutionServices.parking
+                                  ? "Parking Services"
+                                  : "Luku Services",
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -286,25 +295,41 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     buildProcessItem(
-                      iconData: Icons.credit_card_rounded,
-                      titleText: "Make Payment",
-                      function: () {},
-                    ),
-                    buildProcessItem(
-                      iconData: Icons.receipt_long,
-                      titleText: "Get Token",
-                      function: () {},
-                    ),
+                        iconData: Icons.credit_card_rounded,
+                        titleText: "Make Payment",
+                        function: () {
+                          Get.back();
+                          Get.toNamed(
+                            Routes.MAKE_PAYMENT,
+                            arguments: {
+                              "InstitutionServices": service,
+                              "GepgProcesses": "",
+                            },
+                          );
+                        }),
                     buildProcessItem(
                       iconData: Icons.history,
                       titleText: "Payment History",
-                      function: () {},
+                      function: () {
+                        Get.back();
+                        controller.currentIndex.value = 1;
+                      },
                     ),
                     buildProcessItem(
                       iconData: Icons.favorite_outline_rounded,
-                      titleText: "Favorite",
-                      function: () {},
+                      titleText: "Favorite & Recent",
+                      function: () {
+                        Get.back();
+                        controller.currentIndex.value = 2;
+                      },
                     ),
+                    service == InstitutionServices.luku
+                        ? buildProcessItem(
+                            iconData: Icons.receipt_long,
+                            titleText: "Get Token",
+                            function: () {},
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               );
