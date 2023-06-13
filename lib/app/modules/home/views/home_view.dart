@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gepg_min_app_u_i/app/modules/home/views/favorite_view.dart';
+import 'package:gepg_min_app_u_i/app/modules/home/views/payment_history_view.dart';
+import 'package:gepg_min_app_u_i/app/modules/home/views/profile_view.dart';
 
 import 'package:get/get.dart';
 
@@ -10,29 +13,41 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Container(
-        color: Colors.grey[100],
-        child: Column(
-          children: [
-            Stack(
-              // fit: StackFit.expand,
-              children: [
-                buildCustomAppBar(),
-                buildGepgServices(context: context),
-              ],
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            buildHeading(),
-            const SizedBox(
-              height: 10,
-            ),
-            buildInstitutionServices(context: context)
-          ],
-        ),
+      body: Obx(
+        () => controller.currentIndex.value == 0
+            ? buildHomeView(context)
+            : controller.currentIndex.value == 1
+                ? const PaymentHistoryView()
+                : controller.currentIndex.value == 2
+                    ? const FavoriteView()
+                    : const GepgProfileView(),
       ),
       bottomNavigationBar: buildBottomNavigationBar(),
+    );
+  }
+
+  Container buildHomeView(BuildContext context) {
+    return Container(
+      color: Colors.grey[100],
+      child: Column(
+        children: [
+          Stack(
+            // fit: StackFit.expand,
+            children: [
+              buildCustomAppBar(),
+              buildGepgServices(context: context),
+            ],
+          ),
+          const SizedBox(
+            height: 40,
+          ),
+          buildHeading(),
+          const SizedBox(
+            height: 10,
+          ),
+          buildInstitutionServices(context: context)
+        ],
+      ),
     );
   }
 
