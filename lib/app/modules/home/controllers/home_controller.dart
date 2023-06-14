@@ -1,7 +1,9 @@
+import 'package:gepg_min_app_u_i/app/utils/app_constants.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   var currentIndex = 0.obs;
+  Rx<dynamic>? serviceSelected;
 
   final count = 0.obs;
   @override
@@ -21,6 +23,10 @@ class HomeController extends GetxController {
 
   void onChangingNavigation(int selectedIndex) {
     currentIndex.value = selectedIndex;
+  }
+
+  void changeSelectedService({InstitutionServices? institutionServices,GepgProcesses? gepgProcesses,}){
+    serviceSelected!.value = institutionServices;
   }
 
   void increment() => count.value++;

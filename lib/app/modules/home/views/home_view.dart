@@ -4,6 +4,7 @@ import 'package:gepg_min_app_u_i/app/modules/home/views/payment_history_view.dar
 import 'package:gepg_min_app_u_i/app/modules/home/views/profile_view.dart';
 import 'package:gepg_min_app_u_i/app/routes/app_pages.dart';
 import 'package:gepg_min_app_u_i/app/utils/app_constants.dart';
+import 'package:gepg_min_app_u_i/app/widgets/history_item.dart';
 
 import 'package:get/get.dart';
 
@@ -18,11 +19,7 @@ class HomeView extends GetView<HomeController> {
       body: Obx(
         () => controller.currentIndex.value == 0
             ? buildHomeView(context)
-            : controller.currentIndex.value == 1
-                ? const PaymentHistoryView()
-                : controller.currentIndex.value == 2
-                    ? const FavoriteView()
-                    : const GepgProfileView(),
+            : const PaymentHistoryView(),
       ),
       bottomNavigationBar: buildBottomNavigationBar(),
     );
@@ -43,11 +40,16 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(
             height: 40,
           ),
-          buildHeading(),
+          buildHeading(headingText: "Institution Services"),
           const SizedBox(
-            height: 10,
+            height: 5,
           ),
-          buildInstitutionServices(context: context)
+          buildInstitutionServices(context: context),
+          buildHeading(headingText: "History"),
+          const SizedBox(
+            height: 5,
+          ),
+          const HistoryItem(),
         ],
       ),
     );
@@ -69,18 +71,6 @@ class HomeView extends GetView<HomeController> {
             ),
             label: "History",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.favorite_border_rounded,
-            ),
-            label: "Favorites",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_circle_outlined,
-            ),
-            label: "Profile",
-          ),
         ],
         currentIndex: controller.currentIndex.value,
         selectedItemColor: Colors.blue,
@@ -94,14 +84,14 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Padding buildHeading() {
-    return const Padding(
-      padding: EdgeInsets.only(left: 5),
+  Padding buildHeading({required String headingText}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          "Institution Services",
-          style: TextStyle(
+          headingText,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w300,
             color: Colors.black,
@@ -189,7 +179,7 @@ class HomeView extends GetView<HomeController> {
       ),
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.only(
-        top: 10,
+        top: 5,
         left: 5,
         right: 5,
         bottom: 10,
@@ -239,101 +229,108 @@ class HomeView extends GetView<HomeController> {
   }) {
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
+        if (service == InstitutionServices.police ||
+            service == InstitutionServices.water) {
+          Get.toNamed(
+            Routes.MAKE_PAYMENT,
+            arguments: {"service": service},
+          );
+        } else {
+          showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding:
-                          const EdgeInsets.only(top: 4, left: 10, bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey.shade100,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding:
+                            const EdgeInsets.only(top: 4, left: 10, bottom: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey.shade100,
+                            ),
                           ),
                         ),
-                      ),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              height: 5,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(4),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                height: 5,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Text(
-                              service == InstitutionServices.parking
-                                  ? "Parking Services"
-                                  : "Luku Services",
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Text(
+                                service == InstitutionServices.parking
+                                    ? "Parking Services"
+                                    : "Luku Services",
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    buildProcessItem(
-                        iconData: Icons.credit_card_rounded,
-                        titleText: "Make Payment",
+                      buildProcessItem(
+                          iconData: Icons.credit_card_rounded,
+                          titleText: "Make Payment",
+                          function: () {
+                            Get.back();
+                            Get.toNamed(
+                              Routes.MAKE_PAYMENT,
+                              arguments: {
+                                "service": service,
+                              },
+                            );
+                          }),
+                      buildProcessItem(
+                        iconData: Icons.history,
+                        titleText: "Payment History",
                         function: () {
                           Get.back();
-                          Get.toNamed(
-                            Routes.MAKE_PAYMENT,
-                            arguments: {
-                              "InstitutionServices": service,
-                              "GepgProcesses": "",
-                            },
-                          );
-                        }),
-                    buildProcessItem(
-                      iconData: Icons.history,
-                      titleText: "Payment History",
-                      function: () {
-                        Get.back();
-                        controller.currentIndex.value = 1;
-                      },
-                    ),
-                    buildProcessItem(
-                      iconData: Icons.favorite_outline_rounded,
-                      titleText: "Favorite & Recent",
-                      function: () {
-                        Get.back();
-                        controller.currentIndex.value = 2;
-                      },
-                    ),
-                    service == InstitutionServices.luku
-                        ? buildProcessItem(
-                            iconData: Icons.receipt_long,
-                            titleText: "Get Token",
-                            function: () {},
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
-              );
-            });
+                          controller.currentIndex.value = 1;
+                        },
+                      ),
+                      buildProcessItem(
+                        iconData: Icons.favorite_outline_rounded,
+                        titleText: "Favorite & Recent",
+                        function: () {
+                          Get.back();
+                          controller.currentIndex.value = 2;
+                        },
+                      ),
+                      service == InstitutionServices.luku
+                          ? buildProcessItem(
+                              iconData: Icons.receipt_long,
+                              titleText: "Get Token",
+                              function: () {},
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                );
+              });
+        }
       },
       child: Column(
         children: [
@@ -438,6 +435,7 @@ class HomeView extends GetView<HomeController> {
             iconData: Icons.receipt_outlined,
             color: Colors.green.shade400,
             context: context,
+            service: GepgProcesses.makePayment,
           ),
           buildGepgActions(
             rightMarginValue: 10,
@@ -445,6 +443,7 @@ class HomeView extends GetView<HomeController> {
             iconData: Icons.credit_score_rounded,
             color: Colors.orange.shade400,
             context: context,
+            service: GepgProcesses.verifPayment,
           ),
           buildGepgActions(
             rightMarginValue: 0,
@@ -452,20 +451,32 @@ class HomeView extends GetView<HomeController> {
             iconData: Icons.qr_code_scanner_rounded,
             color: Colors.red.shade400,
             context: context,
+            service: GepgProcesses.scanToPay,
           ),
         ],
       ),
     );
   }
 
-  Widget buildGepgActions(
-      {required double rightMarginValue,
-      required IconData iconData,
-      required String title,
-      required Color color,
-      required BuildContext context}) {
+  Widget buildGepgActions({
+    required double rightMarginValue,
+    required IconData iconData,
+    required String title,
+    required Color color,
+    required BuildContext context,
+    required GepgProcesses service,
+  }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        if (service == GepgProcesses.scanToPay) {
+          //SHOW SCANNING PAGE
+        } else {
+          Get.toNamed(
+            Routes.MAKE_PAYMENT,
+            arguments: {"service": service},
+          );
+        }
+      },
       child: Container(
         width: Get.size.height * 0.145,
         height: Get.size.height * 0.145,
