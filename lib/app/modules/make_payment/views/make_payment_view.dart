@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gepg_min_app_u_i/app/routes/app_pages.dart';
 import 'package:gepg_min_app_u_i/app/utils/app_constants.dart';
 import 'package:gepg_min_app_u_i/app/widgets/custom_app_bar.dart';
 import 'package:gepg_min_app_u_i/app/widgets/custom_button.dart';
@@ -48,7 +49,9 @@ class MakePaymentView extends GetView<MakePaymentController> {
             label: "Fetch Details",
             height: 42,
             width: Get.size.width * 0.85,
-            actionFunction: () {},
+            actionFunction: () {
+              Get.toNamed(Routes.MULTIPLE_BILLS);
+            },
             verticalPadding: 32,
           )
         ],
